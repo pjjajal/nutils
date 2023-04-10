@@ -10,7 +10,7 @@ class Timer:
     start_time: float = 0.0
     is_garbage_collector_disabled: bool = False
     
-    def time_start(self, disable_garbage_collector: bool=True) -> None:
+    def time_start(self, disable_garbage_collector: bool=True) -> Callable:
         def _time_start(
             module,
             args,
@@ -23,7 +23,7 @@ class Timer:
 
         return _time_start
 
-    def time_end(self, inference_times: List[float]) -> None:
+    def time_end(self, inference_times: List[float]) -> Callable:
         def _time_end(module, args, output):
             self.end_time = time.time()
             
