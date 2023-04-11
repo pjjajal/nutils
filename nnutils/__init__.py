@@ -33,10 +33,10 @@ class NnUtil:
 
         self.modules_captured.append(name)
 
-    def time(self, module: nn.Module, name: str):
+    def time(self, module: nn.Module, name: str, disable_garbage_collector: bool=True):
         self._check_module(name)
         timer = Timer()
-        prehandle = module.register_forward_pre_hook(timer.time_start())
+        prehandle = module.register_forward_pre_hook(timer.time_start(disable_garbage_collector=disable_garbage_collector))
         posthandle = module.register_forward_hook(
             timer.time_end(self.inference_times[name])
         )
