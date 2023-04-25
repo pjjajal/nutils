@@ -7,11 +7,11 @@ from torch.utils.hooks import RemovableHandle
 
 from .timing import Timer
 
-__all__ = ["NnUtil"]
+__all__ = ["NUtil"]
 
 
 @dataclass
-class NnUtil:
+class NUtil:
     modules_captured: List[str] = field(default_factory=list)
     handles: Dict[str, List[RemovableHandle]] = field(default_factory=dict)
     inference_times: Dict[str, List[float]] = field(default_factory=dict)
@@ -33,10 +33,14 @@ class NnUtil:
 
         self.modules_captured.append(name)
 
-    def time(self, module: nn.Module, name: str, disable_garbage_collector: bool=True):
+    def time(
+        self, module: nn.Module, name: str, disable_garbage_collector: bool = True
+    ):
         self._check_module(name)
         timer = Timer()
-        prehandle = module.register_forward_pre_hook(timer.time_start(disable_garbage_collector=disable_garbage_collector))
+        prehandle = module.register_forward_pre_hook(
+            timer.time_start(disable_garbage_collector=disable_garbage_collector)
+        )
         posthandle = module.register_forward_hook(
             timer.time_end(self.inference_times[name])
         )

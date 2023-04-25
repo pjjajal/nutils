@@ -1,7 +1,7 @@
 import gc
 import time
 from dataclasses import dataclass
-from typing import List
+from typing import List, Callable
 
 
 @dataclass
