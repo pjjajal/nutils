@@ -18,5 +18,10 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+[packages]
+packages = [
+    { include = "nutils" },
+]
+
 [project.urls]
 "Homepage" = "https://github.com/pjjajal/nn-utils"

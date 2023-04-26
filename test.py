@@ -2,8 +2,7 @@ from dataclasses import dataclass
 import torch
 import torch.nn as nn
 import time
-from nnutils import NUtil
-
+from nutils import NUtil
 
 class TestNet(nn.Module):
     def __init__(self, *args, **kwargs) -> None:
@@ -26,10 +25,10 @@ def output_parser(x: torch.Tensor, boolean):
 
 if __name__ == "__main__":
     nn_util = NUtil()
-    model = TestNet().to(device="mps")
+    model   = TestNet()
     nn_util.time(model, "TestNet")
     nn_util.capture_activation(model, "TestNet", output_parser)
-    x = torch.randn((1,10)).to(device="mps")
+    x = torch.randn((1,10))
     model(x)
     # print(MODEL_METRICS)
     print(nn_util)
