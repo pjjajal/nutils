@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nutils"
+version = "0.1.0"
+authors = [
+  { name="Purvish Jajal", email="pjajal@purdue.edu" },
+  { name="Nick John Eliopoulos", email="neliopou@purdue.edu" },
+  { name="Caleb Tung", email="tung3@purdue.edu" },
+]
+description = "Minimialist package for analyzing machine learning models in PyTorch"
+readme = "README.md"
+requires-python = ">=3.7"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[packages]
+packages = [
+    { include = "nutils" },
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pjjajal/nn-utils"
