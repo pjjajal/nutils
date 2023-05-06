@@ -84,7 +84,7 @@ class NUtil:
         self._data_exists("activations")
         self._check_module(name)
 
-        def _capture_activation(module, args, output):
+        def _capture_activation(module, inputs, output):
             self.data["activations"][name].append(output_parser(*output))
 
         handle = module.register_forward_hook(_capture_activation)
