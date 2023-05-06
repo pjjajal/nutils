@@ -69,7 +69,7 @@ class NUtil:
         self.handles[name].append(posthandle)
 
     def capture_activation(
-        self, module: nn.Module, name: str, output_parser: Callable[..., Tuple]
+        self, module: nn.Module, name: str, output_parser: Callable[..., Tuple | Dict]
     ):
         """
         This function is used to capture the activations (outputs) of a given nn.Module.
