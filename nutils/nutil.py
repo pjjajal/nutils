@@ -1,6 +1,6 @@
 import gc
 from dataclasses import dataclass, field
-from typing import Any, Callable, Dict, List, Set, Tuple
+from typing import Any, Callable, Dict, List, Set, Tuple, Union
 
 import objsize
 import torch
@@ -69,7 +69,7 @@ class NUtil:
         self.handles[name].append(posthandle)
 
     def capture_activation(
-        self, module: nn.Module, name: str, output_parser: Callable[..., Tuple | Dict]
+        self, module: nn.Module, name: str, output_parser: Callable[..., Union[Tuple, Dict]]
     ):
         """
         This function is used to capture the activations (outputs) of a given nn.Module.
