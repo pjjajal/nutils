@@ -3,6 +3,9 @@ import torch
 import torch.nn as nn
 import time
 from nutils import NUtil
+import sys
+import objsize
+from tqdm import tqdm
 
 
 class TestNet(nn.Module):
@@ -25,14 +28,18 @@ class TestNet(nn.Module):
 def output_parser(x: torch.Tensor, boolean):
     return x.tolist(), boolean
 
-
-if __name__ == "__main__":
+def main():
     nn_util = NUtil()
     model = TestNet()
     nn_util.time(model, "TestNet")
     nn_util.capture_activation(model, "TestNet", output_parser)
-    x = torch.randn((1, 10))
-    model(x)
-    # print(MODEL_METRICS)
-    model(x)
     print(nn_util)
+    for i in tqdm(range(5000)):
+        x = torch.randn((1, 10))
+        model(x)
+        nn_util.chunker_check(1024**2)
+    print(nn_util)
+
+
+if __name__ == "__main__":
+    main()

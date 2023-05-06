@@ -1,7 +1,8 @@
-import time
+import gc
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Set, Tuple
 
+import objsize
 import torch
 import torch.nn as nn
 from torch.utils.hooks import RemovableHandle
@@ -13,7 +14,8 @@ from .timing import Timer
 class NUtil:
     modules_captured: Set[str] = field(default_factory=set)
     handles: Dict[str, List[RemovableHandle]] = field(default_factory=dict)
-    data: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    data: Dict[str, Dict[str, List[Any]]] = field(default_factory=dict)
+    chunk_num: int = 0
 
     def _check_module(self, name: str):
         """
@@ -90,3 +92,25 @@ class NUtil:
 
     def save(self, filename):
         torch.save(self.data, filename)
+
+    def chunker_check(self, mem_limit: int = 1024**3):
+        """Method used to chunk `data` if it takes up more space than `mem_limit`(default 1GB).
+
+        Args:
+            mem_limit (int, optional): The memory limit for the `data`. 
+            If it becomes larger than `mem_limit` the chunker activates and persists the captured data
+            and reduces memory size.
+            Defaults to 1024**3.
+        """
+        mem_usage = objsize.get_deep_size(self.data)
+        if mem_usage > mem_limit:
+            print("Chunking!")
+            self._chunk()
+
+    def _chunk(self):
+        self.chunk_num += 1
+        torch.save(self.data, f"datachunk_{self.chunk_num}.nit")
+        for subdict_name in self.data:
+            for module in self.data[subdict_name]:
+                self.data[subdict_name][module] = []
+        gc.collect()
