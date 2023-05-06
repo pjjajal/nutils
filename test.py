@@ -4,6 +4,7 @@ import torch.nn as nn
 import time
 from nutils import NUtil
 
+
 class TestNet(nn.Module):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
@@ -20,15 +21,18 @@ class TestNet(nn.Module):
         y = self.backbone(y)
         return self.tanh(y), True
 
+
 def output_parser(x: torch.Tensor, boolean):
     return x.tolist(), boolean
 
+
 if __name__ == "__main__":
     nn_util = NUtil()
-    model   = TestNet()
+    model = TestNet()
     nn_util.time(model, "TestNet")
     nn_util.capture_activation(model, "TestNet", output_parser)
-    x = torch.randn((1,10))
+    x = torch.randn((1, 10))
     model(x)
     # print(MODEL_METRICS)
+    model(x)
     print(nn_util)
