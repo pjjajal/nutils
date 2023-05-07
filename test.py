@@ -25,8 +25,8 @@ class TestNet(nn.Module):
         return self.tanh(y), True
 
 
-def output_parser(x: torch.Tensor, boolean):
-    return x.tolist(), boolean
+def output_parser(module, inputs, outputs):
+    return outputs[0].tolist(), outputs[1]
 
 def main():
     nn_util = NUtil()
@@ -34,10 +34,10 @@ def main():
     nn_util.time(model, "TestNet")
     nn_util.capture_activation(model, "TestNet", output_parser)
     print(nn_util)
-    for i in tqdm(range(5000)):
+    for i in tqdm(range(5)):
         x = torch.randn((1, 10))
         model(x)
-        nn_util.chunker_check(1024**2)
+        # nn_util.chunker_check(1024**2)
     print(nn_util)
 
 

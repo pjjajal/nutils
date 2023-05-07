@@ -69,23 +69,26 @@ class NUtil:
         self.handles[name].append(posthandle)
 
     def capture_activation(
-        self, module: nn.Module, name: str, output_parser: Callable[..., Union[Tuple, Dict]]
+        self,
+        module: nn.Module,
+        name: str,
+        parser: Callable[[Any, Any, Any], Union[Tuple, Dict]],
     ):
         """
         This function is used to capture the activations (outputs) of a given nn.Module.
-        An `output_parser` must be provided to parse the outputs of the module.
+        An `parser` must be provided to parse the outputs of the module.
 
         Args:
             module (nn.Module): Module whose outputs will be captured.
             name (str): User-specified name given to `module`.
-            output_parser (Callable[..., Tuple]): Parser used to parse the outputs of the module
-            prior to saving. The output must be a `Tuple`.
+            parser (Callable[[Any, Any, Any], Union[[Tuple, Dict]]): Parser used to parse the outputs of the module
+            prior to saving. The output must be a `Tuple` or `Dict`.
         """
         self._data_exists("activations")
         self._check_module(name)
 
         def _capture_activation(module, inputs, output):
-            self.data["activations"][name].append(output_parser(*output))
+            self.data["activations"][name].append(parser(module, inputs, output))
 
         handle = module.register_forward_hook(_capture_activation)
         self.handles[name].append(handle)
@@ -97,7 +100,7 @@ class NUtil:
         """Method used to chunk `data` if it takes up more space than `mem_limit`(default 1GB).
 
         Args:
-            mem_limit (int, optional): The memory limit for the `data`. 
+            mem_limit (int, optional): The memory limit for the `data`.
             If it becomes larger than `mem_limit` the chunker activates and persists the captured data
             and reduces memory size.
             Defaults to 1024**3.
