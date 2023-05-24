@@ -1,4 +1,4 @@
-# nn-utils — a collection of utilities for studying PyTorch modules
+# nutils — a collection of utilities for studying PyTorch modules
 ## Local Installation Instructions
 1) Update 'build' module
 `python -m pip install --upgrade build`
