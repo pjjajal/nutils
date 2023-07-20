@@ -6,6 +6,10 @@ import objsize
 import torch
 import torch.nn as nn
 from torch.utils.hooks import RemovableHandle
+# import sys
+# sys.path.append('../mutualInfo')
+# from ..mutualInfo.estimateMINE import EstimateMINE
+from mutualInfo.estimateMINE import EstimateMINE
 
 from .timing import Timer
 
@@ -117,3 +121,18 @@ class NUtil:
             for module in self.data[subdict_name]:
                 self.data[subdict_name][module] = []
         gc.collect()
+    
+    def estimate_layerwise_mutual_information(self, module, x, target, iters):
+        if not isinstance(module, nn.Module):
+            raise ValueError("module must be an instance of nn.Module.")
+
+        estimate_mine = EstimateMINE(
+            input_dim=module.fc1.in_features,
+            output_dim=module.fc7.out_features,
+            activation=module.activation,
+            device=module.device
+        )
+        print(type(target))
+        mi_estimations = estimate_mine.estimate_layerwise_mutual_information(x, target, iters)
+
+        return mi_estimations
