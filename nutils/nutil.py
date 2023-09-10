@@ -7,7 +7,7 @@ import torch
 import torch.nn as nn
 from torch.utils.hooks import RemovableHandle
 
-from .timing import Timer
+from .timing import Timer, CudaTimer
 
 
 @dataclass
@@ -53,12 +53,12 @@ class NUtil:
         self.modules_captured.add(name)
 
     def time(
-        self, module: nn.Module, name: str, disable_garbage_collector: bool = True
+        self, module: nn.Module, name: str, cuda: bool = False, disable_garbage_collector: bool = True
     ):
         self._data_exists("inference_time")
         self._check_module(name)
 
-        timer = Timer()
+        timer = CudaTimer() if cuda else Timer() 
         prehandle = module.register_forward_pre_hook(
             timer.time_start(disable_garbage_collector=disable_garbage_collector)
         )
