@@ -1,3 +1,3 @@
-from .timer import Timer 
+from .timer import Timer, CudaTimer
 
-__all__ = ['Timer']
+__all__ = ["Timer", "CudaTimer"]
