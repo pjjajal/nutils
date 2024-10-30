@@ -5,16 +5,24 @@ from typing import Tuple, List
 import torch.utils.benchmark as bench
 from torchtnt.utils.flops import FlopTensorDispatchMode
 
-def benchmark_model(model: nn.Module, input_shape: Tuple[int] | List[Tuple[int]], device: str, min_run_time: float = 10.0):
+
+__all__ = ["benchmark_model", "measure_flops"]
+
+def benchmark_model(
+    model: nn.Module,
+    input_shape: Tuple[int] | List[Tuple[int]],
+    device: str,
+    min_run_time: float = 10.0,
+):
     """
     Benchmarks the performance of a given PyTorch model.
 
     Args:
         model (nn.Module): The PyTorch model to benchmark.
-        input_shape (Tuple[int] | List[Tuple[int]]): The shape of the input tensor(s). 
+        input_shape (Tuple[int] | List[Tuple[int]]): The shape of the input tensor(s).
             Can be a single tuple or a list of tuples for multiple inputs.
         device (str): The device to run the model on (e.g., 'cpu' or 'cuda').
-        min_run_time (float, optional): The minimum run time for the benchmark in seconds. 
+        min_run_time (float, optional): The minimum run time for the benchmark in seconds.
             Defaults to 10.0 seconds.
 
     Returns:
@@ -36,7 +44,9 @@ def benchmark_model(model: nn.Module, input_shape: Tuple[int] | List[Tuple[int]]
     return timer.blocked_autorange(min_run_time=min_run_time)
 
 
-def measure_flops(model: nn.Module, input_shape: Tuple[int] | List[Tuple[int]], device: str):
+def measure_flops(
+    model: nn.Module, input_shape: Tuple[int] | List[Tuple[int]], device: str
+):
     """
     Measures the floating point operations (FLOPs) for the forward and backward passes of a given model.
 
