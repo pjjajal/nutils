@@ -8,6 +8,7 @@ from torchtnt.utils.flops import FlopTensorDispatchMode
 
 __all__ = ["benchmark_model", "measure_flops"]
 
+
 def benchmark_model(
     model: nn.Module,
     input_shape: Tuple[int] | List[Tuple[int]],
@@ -50,13 +51,19 @@ def measure_flops(
     """
     Measures the floating point operations (FLOPs) for the forward and backward passes of a given model.
 
+    **NOTE: The measured FLOPs are a function of batch-size, to figure out FLOPs per sample, divide the total FLOPs by the batch-size.**
+
     Args:
         model (nn.Module): The neural network model to measure.
         input_shape (Tuple[int] | List[Tuple[int]]): The shape of the input tensor(s). Can be a single tuple or a list of tuples.
         device (str): The device to run the model on (e.g., 'cpu' or 'cuda').
 
     Returns:
-        dict: A dictionary with two keys, 'forward' and 'backward', each containing the FLOP counts for the respective passes.
+        dict: A dictionary with the following keys:
+            - 'forward_per_module': A dictionary containing the FLOP counts for each module during the forward pass.
+            - 'backward_per_module': A dictionary containing the FLOP counts for each module during the backward pass.
+            - 'forward_total': The total FLOP count for the forward pass.
+            - 'backward_total': The total FLOP count for the backward pass.
     """
     # create inputs
     if isinstance(input_shape, tuple):
@@ -71,4 +78,16 @@ def measure_flops(
         ftdm.reset()
         res.sum().backward()
         flops_backward = copy.deepcopy(ftdm.flop_counts)
-    return {"forward": flops_forward, "backward": flops_backward}
+
+    total_forward = sum(
+        [flops for val in flops_forward.values() for flops in val.values()]
+    )
+    total_backward = sum(
+        [flops for val in flops_backward.values() for flops in val.values()]
+    )
+    return {
+        "forward_per_module": flops_forward,
+        "backward_per_module": flops_backward,
+        "forward_total": total_forward,
+        "backward_total": total_backward,
+    }
