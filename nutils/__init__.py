@@ -1,3 +1,1 @@
-from .nutil import NUtil
-
-__all__ = ["NUtil"]
+from .benchmark import *
