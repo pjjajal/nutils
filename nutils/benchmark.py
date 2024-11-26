@@ -76,7 +76,10 @@ def measure_flops(
         res = model(*inputs)
         flops_forward = copy.deepcopy(ftdm.flop_counts)
         ftdm.reset()
-        res.sum().backward()
+        if isinstance(res, torch.Tensor):
+            res.sum().backward()
+        if isinstance(res, (tuple, list)):
+            res[0].sum().backward()
         flops_backward = copy.deepcopy(ftdm.flop_counts)
 
     total_forward = sum(
