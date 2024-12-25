@@ -14,6 +14,7 @@ def benchmark_model(
     input_shape: Tuple[int] | List[Tuple[int]],
     device: str,
     min_run_time: float = 10.0,
+    **kwargs,
 ):
     """
     Benchmarks the performance of a given PyTorch model.
@@ -38,15 +39,15 @@ def benchmark_model(
     model.to(device)
     model.eval()
     timer = bench.Timer(
-        stmt="model.forward(*x)",
-        globals={"model": model, "x": inputs},
+        stmt="model.forward(*x, **kwargs)",
+        globals={"model": model, "x": inputs, "kwargs": kwargs},
         num_threads=1,
     )
     return timer.blocked_autorange(min_run_time=min_run_time)
 
 
 def measure_flops(
-    model: nn.Module, input_shape: Tuple[int] | List[Tuple[int]], device: str
+    model: nn.Module, input_shape: Tuple[int] | List[Tuple[int]], device: str, **kwargs
 ):
     """
     Measures the floating point operations (FLOPs) for the forward and backward passes of a given model.
@@ -73,7 +74,7 @@ def measure_flops(
     # move model to device
     model.to(device)
     with FlopTensorDispatchMode(model) as ftdm:
-        res = model(*inputs)
+        res = model(*inputs, **kwargs)
         flops_forward = copy.deepcopy(ftdm.flop_counts)
         ftdm.reset()
         if isinstance(res, torch.Tensor):
