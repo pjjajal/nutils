@@ -70,9 +70,9 @@ def measure_flops(
     if isinstance(input_shape, tuple):
         input_shape = [input_shape]
     inputs = [torch.randn(shape).to(device) for shape in input_shape]
-
+    
     # move model to device
-    model.to(device)
+    model = model.to(device)
     with FlopTensorDispatchMode(model) as ftdm:
         res = model(*inputs, **kwargs)
         flops_forward = copy.deepcopy(ftdm.flop_counts)
