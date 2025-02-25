@@ -5,3 +5,8 @@ This is a collection of code snippets that can be used in various DL use cases.
 ```sh
 pip install -r requirments.txt
 ```
+
+## Install
+```sh
+pip install .
+```
