@@ -13,6 +13,7 @@ def benchmark_model(
     model: nn.Module,
     input_shape: Tuple[int] | List[Tuple[int]],
     device: str,
+    dtype: torch.dtype = torch.float32,
     min_run_time: float = 10.0,
     **kwargs,
 ):
@@ -33,10 +34,10 @@ def benchmark_model(
     # create inputs
     if isinstance(input_shape, tuple):
         input_shape = [input_shape]
-    inputs = [torch.randn(shape).to(device) for shape in input_shape]
+    inputs = [torch.randn(shape, dtype=dtype).to(device) for shape in input_shape]
 
     # move model to device
-    model.to(device)
+    model.to(device, dtype=dtype)
     model.eval()
     timer = bench.Timer(
         stmt="model.forward(*x, **kwargs)",
