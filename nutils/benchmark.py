@@ -46,7 +46,8 @@ def benchmark_model(
     )
     return timer.blocked_autorange(min_run_time=min_run_time)
 
-
+# manually disable inference mode to allow gradient computation for backward FLOP measurement
+@torch.inference_mode(False)
 def measure_flops(
     model: nn.Module, input_shape: Tuple[int] | List[Tuple[int]], device: str, **kwargs
 ):
