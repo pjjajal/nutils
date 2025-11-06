@@ -40,14 +40,12 @@ def benchmark_model(
     model.to(device, dtype=dtype)
     model.eval()
     timer = bench.Timer(
-        stmt="model.forward(*x, **kwargs)",
+        stmt="model(*x, **kwargs)",
         globals={"model": model, "x": inputs, "kwargs": kwargs},
         num_threads=1,
     )
     return timer.blocked_autorange(min_run_time=min_run_time)
 
-# manually disable inference mode to allow gradient computation for backward FLOP measurement
-@torch.inference_mode(False)
 def measure_flops(
     model: nn.Module, input_shape: Tuple[int] | List[Tuple[int]], device: str, **kwargs
 ):
@@ -68,6 +66,11 @@ def measure_flops(
             - 'forward_total': The total FLOP count for the forward pass.
             - 'backward_total': The total FLOP count for the backward pass.
     """
+    def _unwrap_tuple_list(inputs):
+        if isinstance(inputs, (tuple, list)):
+            return _unwrap_tuple_list(inputs[0])
+        return inputs
+
     # create inputs
     if isinstance(input_shape, tuple):
         input_shape = [input_shape]
@@ -82,7 +85,8 @@ def measure_flops(
         if isinstance(res, torch.Tensor):
             res.sum().backward()
         if isinstance(res, (tuple, list)):
-            res[0].sum().backward()
+            _unwrap_tuple_list(res).sum().backward()
+            # res[0].sum().backward()
         flops_backward = copy.deepcopy(ftdm.flop_counts)
 
     total_forward = sum(
